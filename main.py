@@ -1,7 +1,6 @@
-import crypt
 import sys
 import getopt
-from hmac import compare_digest as compare_hash
+import crypt
 
 def main(dictionary,shadow):
     results = {}
@@ -24,7 +23,6 @@ def main(dictionary,shadow):
     if (len(results) !=0):
         print_(results)
 
-
 def crack_pass(password,file):
     try:
         dictionary = open(file, 'r')
@@ -34,7 +32,7 @@ def crack_pass(password,file):
     lines = dictionary.readlines()
     for line in lines:
         line = line.strip()
-        if (compare_hash(password, crypt.crypt(line, password))):
+        if password == crypt.crypt(line, password):
             print(f"Password cracked successfully:  {line}\n")
             return line
     print("Failed to crack password")
@@ -49,29 +47,38 @@ def print_(results):
         i+=1
 
 def validate_args(argv):
-    dictionary = ""
-    shadow = ""
+    users = []
+    shadow = word_list = ""
+
     try:
-        opts, args = getopt.getopt(argv, "d:s:")
-    except getopt.GetoptError:
-        print('main.py -d <Dictionary File> -s <Shadow File>')
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print('main.py -d <Dictionary File> -s <Shadow File>')
-            sys.exit()
-        elif opt in ("-d"):
-            dictionary = arg
-        elif opt in ("-s"):
-            shadow = arg
-    if (shadow and dictionary):
-        return dictionary, shadow
+        options, args = getopt.getopt(argv, "f:w:",
+                                      ["file =",
+                                       "words ="])
+    except:
+        print("Error: main.py -f <Shadow File> -w <Dictionary File> username(s)")
+        exit(1)
+
+    for arg, value in options:
+        if arg in ['-f', '--file']:
+            shadow = value
+        elif arg in ['-w', '--words']:
+            word_list = value
+
+    if len(argv) > 4:
+        users = argv[4:]
+
+    if (shadow and word_list):
+        if not users:
+            print("No user specified, cracking all passwords!")
+        return word_list, shadow, users
     else:
-        sys.exit("Error: main.py -d <Dictionary File> -s <Shadow File>'")
+        sys.exit("Error: main.py -f <Shadow File> -w <Dictionary File> username(s)")
+
 
 if __name__ == '__main__':
-    dictionary, shadow = validate_args(sys.argv[1:])
-    main(dictionary,shadow)
+    word_list, shadow, users = validate_args(sys.argv[1:])
+    #main(dictionary,shadow, users)
+
 
 
 
