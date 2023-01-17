@@ -1,6 +1,7 @@
 import sys
 import getopt
 import crypt
+import time
 
 output = {}
 hashes = {"1":"MD5","2a":"Blowfish","2y":"Eksblowfish","5":"SHA-256", "6": "SHA-512","y": "yescrypt" }
