@@ -2,10 +2,13 @@ import sys
 import getopt
 import crypt
 
-def main(dictionary,shadow):
-    results = {}
+output = {}
+hashes = {"1":"MD5","2a":"Blowfish","2y":"Eksblowfish","5":"SHA-256", "6": "SHA-512","y": "yescrypt" }
+
+def main(dictionary, shadow, users):
+
     try:
-        shadow_file = open(shadow,'r')
+        shadow_file = open(shadow, 'r')
     except:
         sys.exit("Could not open shadow file")
 
@@ -13,17 +16,28 @@ def main(dictionary,shadow):
     for line in lines:
         line = line.strip()
         user = line.split(":")[0]
-        if (line.split(":")[1] == "!!" or line.split(":")[1] == "*" or line.split(":")[1] == ""or line.split(":")[1] == "!*" ):
-            print(f"No password listed for {user}\n")
+        if users and user not in users:
+            continue
+
+        elif (line.split(":")[1] == "!!" or line.split(":")[1] == "*" or line.split(":")[1] == "" or line.split(":")[
+            1] == "!*"):
+            set_output(user,"N/A","N/A","N/A","N/A")
+
         else:
             print(f"Cracking password for {user}:")
-            result = crack_pass(line.split(":")[1],dictionary)
-            if (result):
-                results[user] = result
-    if (len(results) !=0):
-        print_(results)
+            crack_pass(line.split(":")[1], user, dictionary, line.split(":")[1].split("$")[1])
+    print_()
 
-def crack_pass(password,file):
+def set_output(user,hash,password,tries,time):
+    output[user] = {}
+    output[user]['hash'] = hash
+    output[user]['password'] = password
+    output[user]['tries'] = tries
+    output[user]['time'] = time
+
+def crack_pass(password, user, file, hash):
+    tries = 0
+    time = 0
     try:
         dictionary = open(file, 'r')
     except IOError:
@@ -34,17 +48,21 @@ def crack_pass(password,file):
         line = line.strip()
         if password == crypt.crypt(line, password):
             print(f"Password cracked successfully:  {line}\n")
+            set_output(user,hashes[hash],line,tries,time)
             return line
     print("Failed to crack password")
-    return False
+    set_output(user,"N/A","Failed to crack",tries,time)
 
-def print_(results):
-    i = 1
-    print(f"\nThe following passwords have been cracked!")
+
+def print_():
+    cnt = 1
+    print(f"\nResults of the password cracking process!")
     print(f"\n------------------------------------------\n")
-    for user, password in results.items():
-        print(f"{i}. Username: {user}, Password: {password}\n")
-        i+=1
+    for i in output:
+        print(f"{cnt}. Username: {i}, Hash: { output[i]['hash']}, Password: {output[i]['password']}, Tries: {output[i]['tries']}, Time: {output[i]['time']}\n")
+        cnt += 1
+
+
 
 def validate_args(argv):
     users = []
@@ -77,8 +95,4 @@ def validate_args(argv):
 
 if __name__ == '__main__':
     word_list, shadow, users = validate_args(sys.argv[1:])
-    #main(dictionary,shadow, users)
-
-
-
-
+    main(word_list, shadow, users)
