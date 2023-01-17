@@ -34,11 +34,11 @@ def set_output(user,hash,password,tries,time):
     output[user]['hash'] = hash
     output[user]['password'] = password
     output[user]['tries'] = tries
-    output[user]['time'] = time
+    output[user]['time'] = time + " seconds"
 
 def crack_pass(password, user, file, hash):
     tries = 0
-    time = 0
+    start = time.time()
     try:
         dictionary = open(file, 'r')
     except IOError:
@@ -49,7 +49,7 @@ def crack_pass(password, user, file, hash):
         line = line.strip()
         if password == crypt.crypt(line, password):
             print(f"Password cracked successfully:  {line}\n")
-            set_output(user,hashes[hash],line,tries,time)
+            set_output(user,hashes[hash],line,tries,time.time()-start)
             return line
     print("Failed to crack password")
     set_output(user,"N/A","Failed to crack",tries,time)
