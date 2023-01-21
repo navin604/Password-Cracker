@@ -29,15 +29,18 @@ def main(dictionary, shadow, users):
             crack_pass(line.split(":")[1], user, dictionary, line.split(":")[1].split("$")[1])
     print_()
 
-def set_output(user,hash,password,tries,time):
+def set_output(user,hash,password,tries,time_):
+    print("!")
     output[user] = {}
     output[user]['hash'] = hash
     output[user]['password'] = password
     output[user]['tries'] = tries
-    output[user]['time'] = time + " seconds"
+    print("2")
+    output[user]['time'] = str(time_) + " seconds"
+    print("!3")
 
 def crack_pass(password, user, file, hash):
-    tries = 0
+    tries = 1
     start = time.time()
     try:
         dictionary = open(file, 'r')
@@ -46,13 +49,15 @@ def crack_pass(password, user, file, hash):
 
     lines = dictionary.readlines()
     for line in lines:
+        print(tries)
         line = line.strip()
         if password == crypt.crypt(line, password):
             print(f"Password cracked successfully:  {line}\n")
             set_output(user,hashes[hash],line,tries,time.time()-start)
             return line
+        tries += 1
     print("Failed to crack password")
-    set_output(user,"N/A","Failed to crack",tries,time)
+    set_output(user,"N/A","Failed to crack",tries,time.time()-start)
 
 
 def print_():
