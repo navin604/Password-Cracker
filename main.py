@@ -2,7 +2,12 @@ import sys
 import getopt
 import crypt
 import time
-
+AlphabetLower = [
+    'a', 'b', 'c', 'd', 'e', 'f', 'g',
+    'h', 'i', 'j', 'k', 'l', 'm', 'n',
+    'o', 'p', 'q', 'r', 's', 't', 'u',
+    'v', 'w', 'x', 'y', 'z'
+]
 output = {}
 hashes = {"1":"MD5","2a":"Blowfish","2y":"Eksblowfish","5":"SHA-256", "6": "SHA-512","y": "yescrypt" }
 
@@ -30,14 +35,12 @@ def main(dictionary, shadow, users):
     print_()
 
 def set_output(user,hash,password,tries,time_):
-    print("!")
     output[user] = {}
     output[user]['hash'] = hash
     output[user]['password'] = password
     output[user]['tries'] = tries
-    print("2")
     output[user]['time'] = str(time_) + " seconds"
-    print("!3")
+
 
 def crack_pass(password, user, file, hash):
     tries = 1
@@ -56,9 +59,35 @@ def crack_pass(password, user, file, hash):
             set_output(user,hashes[hash],line,tries,time.time()-start)
             return line
         tries += 1
-    print("Failed to crack password")
-    set_output(user,"N/A","Failed to crack",tries,time.time()-start)
+    res = crack(password)
+    set_output(user,hashes[hash],res,tries,time.time()-start)
 
+
+
+
+
+def generate(str_len, string,target):
+    if(str_len == 0):
+        return False
+    for i in range(26):
+
+        res = string + AlphabetLower[i]
+        print(res)
+        if crypt.crypt(res,target) == target:
+            return res
+        var = generate(str_len-1, res, target)
+        if var:
+            return var
+
+def crack(target):
+    str_len = 1
+    while True:
+
+        var = generate(str_len, "",target)
+        if var: break
+        str_len +=1
+    print(var)
+    return True
 
 def print_():
     cnt = 1
