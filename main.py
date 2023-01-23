@@ -73,14 +73,16 @@ def dict_crack(password, user, file, hash):
 
 def generate_words(str_len, string,target):
     global helper
-    if(str_len == 0):
-        return False
-    if crypt.crypt(string,target) == target:
+    if str_len == 0 and crypt.crypt(string,target) == target:
+        print(string)
         return string
+    if str_len == 0:
+        return False
+
     for i in range(26):
         temp = string + AlphabetLower[i]
         helper +=1
-        res= generate_words(str_len-1, temp,target)
+        res = generate_words(str_len-1, temp,target)
         if res: return res
 
 
