@@ -14,6 +14,7 @@ hashes = {"1":"MD5","2a":"Blowfish","2y":"Eksblowfish","5":"SHA-256", "6": "SHA-
 
 output = {}
 helper = 0
+tries_limit = 0
 
 def main(dictionary, shadow, users):
 
@@ -28,15 +29,14 @@ def main(dictionary, shadow, users):
         user = line.split(":")[0]
         if users and user not in users:
             continue
-
         if (line.split(":")[1] == "!!" or line.split(":")[1] == "*" or line.split(":")[1] == "" or line.split(":")[
             1] == "!*"):
-            set_output(user,"N/A","N/A","N/A","N/A")
+            continue
 
-        print(f"Cracking password for {user}:")
         check = dict_crack(line.split(":")[1], user, dictionary, line.split(":")[1].split("$")[1])
         if not check:
             brute_force(line.split(":")[1],user,line.split(":")[1].split("$")[1])
+
 
 
 
@@ -50,6 +50,9 @@ def set_output(user,hash,password,tries,time_):
     output[user]['hash'] = hash
     output[user]['password'] = password
     output[user]['tries'] = tries
+    if time_ == "N/A":
+        output[user]['time'] = "N/A"
+        return
     output[user]['time'] = str(round(time_,5)) + " seconds"
 
 
@@ -58,14 +61,15 @@ def dict_crack(password, user, file, hash):
     start = time.time()
     try:
         dictionary = open(file, 'r')
-    except IOError:
-        sys.exit("Could not open file: ", file)
+    except:
+        sys.exit(f"Could not open file: {file}")
 
     lines = dictionary.readlines()
+    if not lines: return False
     for line in lines:
         line = line.strip()
         if password == crypt.crypt(line, password):
-            print(f"Password cracked successfully:  {line}\n")
+            print(f"Password cracked successfully ->  User:{user} Pass:{line}\n")
             set_output(user,hashes[hash],line,tries,time.time()-start)
             return True
         tries += 1
@@ -74,16 +78,18 @@ def dict_crack(password, user, file, hash):
 def generate_words(str_len, string,target):
     global helper
     if str_len == 0 and crypt.crypt(string,target) == target:
-        print(string)
         return string
     if str_len == 0:
         return False
 
     for i in range(26):
-        temp = string + AlphabetLower[i]
         helper +=1
+        temp = string + AlphabetLower[i]
         res = generate_words(str_len-1, temp,target)
         if res: return res
+        if helper == tries_limit:
+            return "MAX_"
+
 
 
 
@@ -92,10 +98,14 @@ def brute_force(target,user,hash):
     str_len = 1
     start = time.time()
     while True:
-        var= generate_words(str_len, "",target)
-        if var: break
+        var = generate_words(str_len, "",target)
+        if var and var == "MAX_":
+            set_output(user,"N/A","Tries limit reached",helper,time.time()-start)
+            helper = 0
+            return
+        elif var:
+            break
         str_len +=1
-
     set_output(user,hashes[hash],var,helper,time.time()-start)
     helper = 0
 
@@ -112,32 +122,37 @@ def print_():
 
 
 def validate_args(argv):
+    global tries_limit
     users = []
     shadow = word_list = ""
 
     try:
-        options, args = getopt.getopt(argv, "f:w:",
+        options, args = getopt.getopt(argv, "f:t:w:",
                                       ["file =",
+                                       "tries =",
                                        "words ="])
-    except:
-        print("Error: main.py -f <Shadow File> -w <Dictionary File> username(s)")
-        exit(1)
+    except Exception as e:
+        print("Error: main.py -f <Shadow File> -t <tries> -w <Dictionary File> username(s)")
+        sys.exit(f"{e}")
 
     for arg, value in options:
         if arg in ['-f', '--file']:
             shadow = value
         elif arg in ['-w', '--words']:
             word_list = value
+        elif arg in ['-t', '--tries']:
+            tries_limit = int(value)
 
-    if len(argv) > 4:
+    if len(argv) > 6:
+        print(argv)
         users = argv[4:]
 
-    if (shadow and word_list):
+    if (shadow and word_list and tries_limit):
         if not users:
             print("No user specified, cracking all passwords!")
         return word_list, shadow, users
     else:
-        sys.exit("Error: main.py -f <Shadow File> -w <Dictionary File> username(s)")
+        sys.exit("Error: main.py -f <Shadow File> -t <tries> -w <Dictionary File> username(s)")
 
 
 if __name__ == '__main__':
