@@ -14,7 +14,7 @@ AlphabetLower = [
     '5','6','7','8','9'
 ]
 
-hashes = {"1":"MD5","2a":"Blowfish","2y":"Eksblowfish","5":"SHA-256", "6": "SHA-512","y": "yescrypt","2b":"bcrypt version 2b" }
+hashes = {"1":"MD5","2a":"Blowfish - 2a","2y":"Eksblowfish - 2y","5":"SHA-256", "6": "SHA-512","y": "yescrypt","2b":"bcrypt version 2b" }
 
 output = {}
 helper = 0
@@ -116,12 +116,16 @@ def brute_force(target,user,hash):
 
 
 def print_():
-    num = 1
     print(f"\nResults of the password cracking process!")
     print(f"\n------------------------------------------\n")
     for i in output:
-        print(f"{num}. Username: {i}, Hash: { output[i]['hash']}, Password: {output[i]['password']}, Tries: {output[i]['tries']}, Time: {output[i]['time']}\n")
-        num += 1
+        print(f"Username: {i}\n")
+        print(f"Hash: { output[i]['hash']}\n" )
+        print(f"Password: {output[i]['password']}\n")
+        print(f"Tries: {output[i]['tries']}\n")
+        print(f"Time: {output[i]['time']}\n")
+        print(f"------------------------------------------\n")
+
 
 
 
