@@ -7,7 +7,11 @@ AlphabetLower = [
     'a', 'b', 'c', 'd', 'e', 'f', 'g',
     'h', 'i', 'j', 'k', 'l', 'm', 'n',
     'o', 'p', 'q', 'r', 's', 't', 'u',
-    'v', 'w', 'x', 'y', 'z'
+    'v', 'w', 'x', 'y', 'z','A','B','C',
+    'D','E','F','G','H','I','J','K','L',
+    'M','N','O','P','Q','R','S','T','U',
+    'V','W','X','Y','Z','0','1','2','3','4',
+    '5','6','7','8','9'
 ]
 
 hashes = {"1":"MD5","2a":"Blowfish","2y":"Eksblowfish","5":"SHA-256", "6": "SHA-512","y": "yescrypt" }
@@ -82,7 +86,7 @@ def generate_words(str_len, string,target):
     if str_len == 0:
         return False
 
-    for i in range(26):
+    for i in range(len(AlphabetLower)):
         helper +=1
         temp = string + AlphabetLower[i]
         res = generate_words(str_len-1, temp,target)
@@ -144,7 +148,6 @@ def validate_args(argv):
             tries_limit = int(value)
 
     if len(argv) > 6:
-        print(argv)
         users = argv[4:]
 
     if (shadow and word_list and tries_limit):
