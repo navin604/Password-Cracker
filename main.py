@@ -30,6 +30,7 @@ def main(dictionary, shadow, users):
     lines = shadow_file.readlines()
     for line in lines:
         line = line.strip()
+        if not line: continue
         user = line.split(":")[0]
         if users and user not in users:
             continue
@@ -40,10 +41,6 @@ def main(dictionary, shadow, users):
         check = dict_crack(line.split(":")[1], user, dictionary, line.split(":")[1].split("$")[1])
         if not check:
             brute_force(line.split(":")[1],user,line.split(":")[1].split("$")[1])
-
-
-
-
     print_()
 
 
@@ -117,7 +114,10 @@ def brute_force(target,user,hash):
 
 def print_():
     print(f"\nResults of the password cracking process!")
-    print(f"\n------------------------------------------\n")
+    print(f"------------------------------------------\n")
+    if len(output) == 0:
+        print("No users cracked!\n")
+        return
     for i in output:
         print(f"Username: {i}\n")
         print(f"Hash: { output[i]['hash']}\n" )
@@ -156,7 +156,7 @@ def validate_args(argv):
 
     if (shadow and word_list and tries_limit):
         if not users:
-            print("No user specified, cracking all passwords!")
+            print("\nNo user specified, cracking all passwords!\n")
         return word_list, shadow, users
     else:
         sys.exit("Error: main.py -f <Shadow File> -t <tries> -w <Dictionary File> username(s)")
