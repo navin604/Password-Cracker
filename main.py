@@ -37,7 +37,7 @@ def main(dictionary, shadow, users):
         if users and user not in users:
             continue
         if (line.split(":")[1] == "!!" or line.split(":")[1] == "*" or line.split(":")[1] == "" or line.split(":")[
-            1] == "!*"):
+            1] == "!*" or line.split(":")[1] == "!"):
             continue
 
         check = dict_crack(line.split(":")[1], user, dictionary, line.split(":")[1].split("$")[1])
@@ -72,7 +72,7 @@ def dict_crack(password, user, file, hash):
     for line in lines:
         line = line.strip()
         if password == crypt.crypt(line, password):
-            print(f"Password cracked successfully ->  User:{user} Pass:{line}\n")
+            print(f"Password cracked successfully ->  User: {user} Pass: {line}\n")
             set_output(user,hashes[hash],line,tries,time.time()-start)
             return True
         tries += 1
