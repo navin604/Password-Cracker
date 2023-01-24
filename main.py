@@ -14,7 +14,7 @@ AlphabetLower = [
     '5','6','7','8','9'
 ]
 
-hashes = {"1":"MD5","2a":"Blowfish","2y":"Eksblowfish","5":"SHA-256", "6": "SHA-512","y": "yescrypt" }
+hashes = {"1":"MD5","2a":"Blowfish","2y":"Eksblowfish","5":"SHA-256", "6": "SHA-512","y": "yescrypt","2b":"bcrypt version 2b" }
 
 output = {}
 helper = 0
