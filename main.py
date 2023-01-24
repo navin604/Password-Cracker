@@ -30,7 +30,9 @@ def main(dictionary, shadow, users):
     lines = shadow_file.readlines()
     for line in lines:
         line = line.strip()
-        if not line: continue
+        if not line:
+            print("Empty line in shadow file! Check and see if you are using the wrong file!\n")
+            continue
         user = line.split(":")[0]
         if users and user not in users:
             continue
