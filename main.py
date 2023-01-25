@@ -154,7 +154,8 @@ def validate_args(argv):
             tries_limit = int(value)
 
     if len(argv) > 6:
-        users = argv[4:]
+        users = argv[6:]
+        
 
     if (shadow and word_list and tries_limit):
         if not users:
