@@ -45,9 +45,6 @@ def main(dictionary, shadow, users):
             brute_force(line.split(":")[1],user,line.split(":")[1].split("$")[1])
     print_()
 
-
-
-
 def set_output(user,hash,password,tries,time_):
     output[user] = {}
     output[user]['hash'] = hash
@@ -57,7 +54,6 @@ def set_output(user,hash,password,tries,time_):
         output[user]['time'] = "N/A"
         return
     output[user]['time'] = str(round(time_,5)) + " seconds"
-
 
 def dict_crack(password, user, file, hash):
     tries = 1
@@ -93,9 +89,6 @@ def generate_words(str_len, string,target):
         if helper == tries_limit:
             return "MAX_"
 
-
-
-
 def brute_force(target,user,hash):
     global helper
     str_len = 1
@@ -104,12 +97,11 @@ def brute_force(target,user,hash):
         var = generate_words(str_len, "",target)
         if var and var == "MAX_":
             set_output(user,"N/A","Tries limit reached",helper,time.time()-start)
-            helper = 0
-            return
+            break
         elif var:
+            set_output(user,hashes[hash],var,helper,time.time()-start)
             break
         str_len +=1
-    set_output(user,hashes[hash],var,helper,time.time()-start)
     helper = 0
 
 
@@ -127,9 +119,6 @@ def print_():
         print(f"Tries: {output[i]['tries']}\n")
         print(f"Time: {output[i]['time']}\n")
         print(f"------------------------------------------\n")
-
-
-
 
 def validate_args(argv):
     global tries_limit
@@ -155,7 +144,6 @@ def validate_args(argv):
 
     if len(argv) > 6:
         users = argv[6:]
-        
 
     if (shadow and word_list and tries_limit):
         if not users:
@@ -163,7 +151,6 @@ def validate_args(argv):
         return word_list, shadow, users
     else:
         sys.exit("Error: main.py -f <Shadow File> -t <tries> -w <Dictionary File> username(s)")
-
 
 if __name__ == '__main__':
     word_list, shadow, users = validate_args(sys.argv[1:])
