@@ -40,9 +40,7 @@ def main(dictionary, shadow, users):
             1] == "!*" or line.split(":")[1] == "!"):
             continue
 
-        check = dict_crack(line.split(":")[1], user, dictionary, line.split(":")[1].split("$")[1])
-        if not check:
-            brute_force(line.split(":")[1],user,line.split(":")[1].split("$")[1])
+        brute_force(line.split(":")[1],user,line.split(":")[1].split("$")[1])
     print_()
 
 def set_output(user,hash,password,tries,time_):
@@ -54,24 +52,6 @@ def set_output(user,hash,password,tries,time_):
         output[user]['time'] = "N/A"
         return
     output[user]['time'] = str(round(time_,5)) + " seconds"
-
-def dict_crack(password, user, file, hash):
-    tries = 1
-    start = time.time()
-    try:
-        dictionary = open(file, 'r')
-    except:
-        sys.exit(f"Could not open file: {file}")
-
-    lines = dictionary.readlines()
-    if not lines: return False
-    for line in lines:
-        line = line.strip()
-        if password == crypt.crypt(line, password):
-            print(f"Password cracked successfully ->  User: {user} Pass: {line}\n")
-            set_output(user,hashes[hash],line,tries,time.time()-start)
-            return True
-        tries += 1
 
 
 def generate_words(str_len, string,target):
@@ -126,32 +106,29 @@ def validate_args(argv):
     shadow = word_list = ""
 
     try:
-        options, args = getopt.getopt(argv, "f:t:w:",
+        options, args = getopt.getopt(argv, "f:t:",
                                       ["file =",
-                                       "tries =",
-                                       "words ="])
+                                       "tries ="])
     except Exception as e:
-        print("Error: main.py -f <Shadow File> -t <tries> -w <Dictionary File> username(s)")
+        print("Error: main.py -f <Shadow File> -t <tries> username(s)")
         sys.exit(f"{e}")
 
     for arg, value in options:
         if arg in ['-f', '--file']:
             shadow = value
-        elif arg in ['-w', '--words']:
-            word_list = value
         elif arg in ['-t', '--tries']:
             tries_limit = int(value)
 
-    if len(argv) > 6:
-        users = argv[6:]
+    if len(argv) > 4:
+        users = argv[4:]
 
-    if (shadow and word_list and tries_limit):
+    if (shadow and tries_limit):
         if not users:
             print("\nNo user specified, cracking all passwords!\n")
         return word_list, shadow, users
     else:
-        sys.exit("Error: main.py -f <Shadow File> -t <tries> -w <Dictionary File> username(s)")
+        sys.exit("Error: main.py -f <Shadow File> -t <tries> username(s)")
 
 if __name__ == '__main__':
     word_list, shadow, users = validate_args(sys.argv[1:])
-    main(word_list, shadow, users)
+    #main(word_list, shadow, users)
