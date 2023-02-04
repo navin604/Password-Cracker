@@ -20,7 +20,7 @@ output = {}
 helper = 0
 tries_limit = 0
 
-def main(dictionary, shadow, users):
+def main(shadow, users):
 
     try:
         shadow_file = open(shadow, 'r')
@@ -103,7 +103,7 @@ def print_():
 def validate_args(argv):
     global tries_limit
     users = []
-    shadow = word_list = ""
+    shadow = ""
 
     try:
         options, args = getopt.getopt(argv, "f:t:",
@@ -125,10 +125,10 @@ def validate_args(argv):
     if (shadow and tries_limit):
         if not users:
             print("\nNo user specified, cracking all passwords!\n")
-        return word_list, shadow, users
+        return shadow, users
     else:
         sys.exit("Error: main.py -f <Shadow File> -t <tries> username(s)")
 
 if __name__ == '__main__':
-    word_list, shadow, users = validate_args(sys.argv[1:])
-    #main(word_list, shadow, users)
+    shadow, users = validate_args(sys.argv[1:])
+    #main(shadow, users)
