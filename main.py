@@ -106,29 +106,32 @@ def validate_args(argv):
     shadow = ""
 
     try:
-        options, args = getopt.getopt(argv, "f:t:",
+        options, args = getopt.getopt(argv, "f:t:a:",
                                       ["file =",
-                                       "tries ="])
+                                       "threads =",
+                                       "attempts ="])
     except Exception as e:
-        print("Error: main.py -f <Shadow File> -t <tries> username(s)")
+        print("Error: main.py -f <Shadow File> -t <# threads> -a <# attempts> username(s)")
         sys.exit(f"{e}")
 
     for arg, value in options:
         if arg in ['-f', '--file']:
             shadow = value
-        elif arg in ['-t', '--tries']:
+        elif arg in ['-t', '--threads']:
+            threads = int(value)
+        elif arg in ['-a', '--attempts']:
             tries_limit = int(value)
 
-    if len(argv) > 4:
-        users = argv[4:]
+    if len(argv) > 6:
+        users = argv[6:]
 
-    if (shadow and tries_limit):
+    if (shadow and tries_limit and threads):
         if not users:
             print("\nNo user specified, cracking all passwords!\n")
-        return shadow, users
+        return shadow, users, threads
     else:
-        sys.exit("Error: main.py -f <Shadow File> -t <tries> username(s)")
+        sys.exit("Error: main.py -f <Shadow File> -t <# threads> -a <# attempts> username(s)")
 
 if __name__ == '__main__':
-    shadow, users = validate_args(sys.argv[1:])
+    shadow, users, threads = validate_args(sys.argv[1:])
     #main(shadow, users)
