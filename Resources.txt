@@ -1,0 +1,4 @@
+https://superfastpython.com/threadpoolexecutor-in-python/#Python_Threads_and_the_Need_for_Thread_Pools
+
+
+https://superfastpython.com/threading-in-python/
