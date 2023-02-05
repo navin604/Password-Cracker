@@ -122,6 +122,9 @@ def validate_args(argv):
         elif arg in ['-a', '--attempts']:
             tries_limit = int(value)
 
+    if threads <= 0:
+        sys.exit(f"Minimum thread value is 1!")
+
     if len(argv) > 6:
         users = argv[6:]
 
