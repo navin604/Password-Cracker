@@ -2,6 +2,7 @@ import sys
 import getopt
 import crypt
 import time
+import multiprocessing
 
 AlphabetLower = [
     'a', 'b', 'c', 'd', 'e', 'f', 'g',
@@ -100,10 +101,14 @@ def print_():
         print(f"Time: {output[i]['time']}\n")
         print(f"------------------------------------------\n")
 
+def set_min_thread():
+    return multiprocessing.cpu_count()
+
 def validate_args(argv):
     global tries_limit
     users = []
     shadow = ""
+    threads = set_min_thread()
 
     try:
         options, args = getopt.getopt(argv, "f:t:a:",
@@ -120,15 +125,18 @@ def validate_args(argv):
         elif arg in ['-t', '--threads']:
             threads = int(value)
         elif arg in ['-a', '--attempts']:
-            tries_limit = int(value)
+            try:
+                tries_limit = int(value)
+            except ValueError:
+                sys.exit("Error: main.py -f <Shadow File> -t <# threads> -a <# attempts> username(s)")
 
     if threads <= 0:
-        sys.exit(f"Minimum thread value is 1!")
+        threads = set_min_thread()
 
     if len(argv) > 6:
         users = argv[6:]
 
-    if (shadow and tries_limit and threads):
+    if (shadow and tries_limit):
         if not users:
             print("\nNo user specified, cracking all passwords!\n")
         return shadow, users, threads
