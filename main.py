@@ -61,12 +61,13 @@ def helper(target,user,hash,threads):
     global check
     length = 1
     while True:
+        start = time.time()
         var = []
         if check:
             check = False
             break
         for i in range(threads):
-            daemon = Thread(target=brute_force, name='Monitor',args=(length, target,user,hash))
+            daemon = Thread(target=brute_force, name='Monitor',args=(length, target,user,hash,start))
             length += 1
             var.append(daemon)
         for x in var:
@@ -74,26 +75,24 @@ def helper(target,user,hash,threads):
         for j in var:
             j.join()
 
+
 def close_threads():
     # When check is true, threads close
     global check
     with attempts_lock:
         check = True
 
-def brute_force(i, target,user,hash):
+def brute_force(i, target,user,hash,start):
     # Configures brute force attack settings
     global attempts
     str_len = i
-    start = time.time()
     while True:
         var = generate_words(str_len, "",target)
         if var and var == "MAX_":
-            print("maxxx")
             close_threads()
             set_output(user,"N/A","Tries limit reached",tries_limit,time.time()-start)
 
         elif var:
-            print("solved")
             close_threads()
             set_output(user,hashes[hash],var,attempts,time.time()-start)
             attempts = 0
