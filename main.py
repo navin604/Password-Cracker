@@ -162,7 +162,7 @@ def validate_args(argv):
     global tries_limit
     users = []
     shadow = ""
-    threads = set_min_thread()
+    threads = False
 
     try:
         options, args = getopt.getopt(argv, "f:t:a:",
@@ -177,20 +177,26 @@ def validate_args(argv):
         if arg in ['-f', '--file']:
             shadow = value
         elif arg in ['-t', '--threads']:
-            threads = int(value)
+            try:
+                threads = int(value)
+            except ValueError:
+                threads = set_min_thread()
         elif arg in ['-a', '--attempts']:
             try:
                 tries_limit = int(value)
             except ValueError:
                 sys.exit("Error: main.py -f <Shadow File> -t <# threads> -a <# attempts> username(s)")
 
-    if threads <= 0:
+    if not threads:
+        users = argv[4:]
+    if threads <= 0 or not threads:
         threads = set_min_thread()
 
-    if len(argv) > 6:
+
+    if len(argv) > 6 and not users:
         users = argv[6:]
 
-    if (shadow and tries_limit):
+    if (shadow and tries_limit and threads):
         if not users:
             print("\nNo user specified, cracking all passwords!\n")
         return shadow, users, threads
