@@ -190,7 +190,7 @@ def validate_args(argv):
     if not threads:
         users = argv[4:]
     if threads <= 0 or not threads:
-        print("Threads not specified, setting as core #")
+        print("Threads not specified, setting as # of cores")
         threads = set_min_thread()
         print(f"Thread count set as {threads}")
 
